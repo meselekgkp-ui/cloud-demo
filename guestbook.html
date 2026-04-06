@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Serverless Guestbook</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background-color: #f8f9fa; }
+    h1 { color: #ff9900; }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .send-btn { background-color: #ff9900; color: white; }
+    .refresh-btn { background-color: #007bff; color: white; margin-left: 15px; }
+    .message {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      background-color: white;
+    }
+    .message strong { color: #333; }
+    .message small { color: #666; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <h1>Live Serverless Guestbook</h1>
+  <p>Schreib etwas – es wird sofort in der DynamoDB gespeichert!</p>
+
+  <input type="text" id="name" placeholder="Dein Name" value="Student">
+  <textarea id="message" rows="4" placeholder="Deine Nachricht..."></textarea>
+  
+  <button class="send-btn" onclick="sendMessage()">Nachricht senden</button>
+
+  <h2>
+    Aktuelle Einträge 
+    <button class="refresh-btn" onclick="refreshEntries()">🔄 Aktualisieren</button>
+  </h2>
+  
+  <div id="entries"></div>
+
+  <script>
+    // === DEINE AKTUELLE API GATEWAY URL ===
+    const url = "https://82dy2iwzrc.execute-api.us-east-1.amazonaws.com/prod/guestbook";
+
+    async function loadEntries() {
+      try {
+        const response = await fetch(url);
+        const entries = await response.json();
+        
+        const div = document.getElementById('entries');
+        div.innerHTML = entries.map(e => `
+          <div class="message">
+            <strong>${e.name || 'Gast'}</strong> 
+            <small>(${new Date(e.timestamp).toLocaleString('de-DE')})</small><br>
+            ${e.message || ''}
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error("Fehler beim Laden:", error);
+        document.getElementById('entries').innerHTML = 
+          "<p style='color:red'>Fehler beim Laden der Einträge. Bitte aktualisieren.</p>";
+      }
+    }
+
+    async function sendMessage() {
+      const name = document.getElementById('name').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      if (!message) {
+        alert("Bitte eine Nachricht eingeben!");
+        return;
+      }
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, message })
+        });
+
+        const result = await response.json();
+        alert(result.message || "Nachricht erfolgreich gesendet!");
+
+        loadEntries();                    // automatisch neu laden
+        document.getElementById('message').value = '';
+      } catch (error) {
+        alert("Fehler beim Senden. Bitte versuche es erneut.");
+        console.error(error);
+      }
+    }
+
+    function refreshEntries() {
+      loadEntries();
+    }
+
+    window.onload = loadEntries;
+  </script>
+</body>
+</html>
