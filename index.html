@@ -5,14 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Serverless Guestbook</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f8f9fa;
-    }
-    h1 {
-      color: #ff9900;
-    }
+    body { font-family: Arial, sans-serif; margin: 40px; background-color: #f8f9fa; }
+    h1 { color: #ff9900; }
     input, textarea {
       width: 100%;
       padding: 12px;
@@ -28,15 +22,8 @@
       border-radius: 6px;
       cursor: pointer;
     }
-    .send-btn {
-      background-color: #ff9900;
-      color: white;
-    }
-    .refresh-btn {
-      background-color: #007bff;
-      color: white;
-      margin-left: 15px;
-    }
+    .send-btn { background-color: #ff9900; color: white; }
+    .refresh-btn { background-color: #007bff; color: white; margin-left: 15px; }
     .message {
       border: 1px solid #ddd;
       padding: 15px;
@@ -44,13 +31,8 @@
       border-radius: 8px;
       background-color: white;
     }
-    .message strong {
-      color: #333;
-    }
-    .message small {
-      color: #666;
-      font-size: 0.9em;
-    }
+    .message strong { color: #333; }
+    .message small { color: #666; font-size: 0.9em; }
   </style>
 </head>
 <body>
@@ -70,8 +52,8 @@
   <div id="entries"></div>
 
   <script>
-    // Neue API Gateway URL (die du gerade erstellt hast)
-    const url = "https://82dy2iwzrc.execute-api.us-east-1.amazonaws.com/prod";
+    // === DEINE AKTUELLE API GATEWAY URL ===
+    const url = "https://82dy2iwzrc.execute-api.us-east-1.amazonaws.com/prod/guestbook";
 
     async function loadEntries() {
       try {
@@ -112,8 +94,8 @@
         const result = await response.json();
         alert(result.message || "Nachricht erfolgreich gesendet!");
 
-        loadEntries();           // automatisch aktualisieren
-        document.getElementById('message').value = ''; // Feld leeren
+        loadEntries();                    // automatisch neu laden
+        document.getElementById('message').value = '';
       } catch (error) {
         alert("Fehler beim Senden. Bitte versuche es erneut.");
         console.error(error);
@@ -124,7 +106,6 @@
       loadEntries();
     }
 
-    // Seite beim Laden einmal aktualisieren
     window.onload = loadEntries;
   </script>
 </body>
