@@ -70,10 +70,9 @@
   <div id="entries"></div>
 
   <script>
-    // === DEINE LAMBDA FUNCTION URL HIER EINFÜGEN ===
+    // Neue API Gateway URL (die du gerade erstellt hast)
     const url = "https://82dy2iwzrc.execute-api.us-east-1.amazonaws.com/prod";
 
-    // Einträge laden
     async function loadEntries() {
       try {
         const response = await fetch(url);
@@ -82,7 +81,7 @@
         const div = document.getElementById('entries');
         div.innerHTML = entries.map(e => `
           <div class="message">
-            <strong>${e.name || 'Anonymous'}</strong> 
+            <strong>${e.name || 'Gast'}</strong> 
             <small>(${new Date(e.timestamp).toLocaleString('de-DE')})</small><br>
             ${e.message || ''}
           </div>
@@ -94,7 +93,6 @@
       }
     }
 
-    // Nachricht senden
     async function sendMessage() {
       const name = document.getElementById('name').value.trim();
       const message = document.getElementById('message').value.trim();
@@ -114,23 +112,19 @@
         const result = await response.json();
         alert(result.message || "Nachricht erfolgreich gesendet!");
 
-        // Nach dem Senden automatisch aktualisieren
-        loadEntries();
-
-        // Nachricht-Feld leeren
-        document.getElementById('message').value = '';
+        loadEntries();           // automatisch aktualisieren
+        document.getElementById('message').value = ''; // Feld leeren
       } catch (error) {
         alert("Fehler beim Senden. Bitte versuche es erneut.");
         console.error(error);
       }
     }
 
-    // Manueller Refresh
     function refreshEntries() {
       loadEntries();
     }
 
-    // Beim Laden der Seite einmal ausführen
+    // Seite beim Laden einmal aktualisieren
     window.onload = loadEntries;
   </script>
 </body>
