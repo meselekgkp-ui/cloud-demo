@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Guestbook - Serverless Demo</title>
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    input, textarea { width: 100%; padding: 10px; margin: 10px 0; }
+    button { padding: 12px 20px; background: #ff9900; color: white; border: none; font-size: 16px; }
+    .message { border: 1px solid #ddd; padding: 15px; margin: 15px 0; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>🟠 Live Serverless Guestbook</h1>
+  <p>Schreib etwas – es wird sofort in der DynamoDB gespeichert!</p>
+
+  <input type="text" id="name" placeholder="Dein Name" value="Student">
+  <textarea id="message" rows="3" placeholder="Deine Nachricht..."></textarea>
+  <button onclick="sendMessage()">Nachricht senden</button>
+
+  <h2>Aktuelle Einträge</h2>
+  <div id="entries"></div>
+
+  <script>
+    const url = "https://g366qnznqhz75ihpbzj4unrjji0uawat.lambda-url.us-east-1.on.aws/";
+
+    async function sendMessage() {
+      const name = document.getElementById('name').value;
+      const message = document.getElementById('message').value;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, message })
+      });
+
+      const result = await response.json();
+      alert(result.message || "Gespeichert!");
+      loadEntries();
+    }
+
+    async function loadEntries() {
+      const response = await fetch(url);
+      const entries = await response.json();
+      const div = document.getElementById('entries');
+      div.innerHTML = entries.map(e => `
+        <div class="message">
+          <strong>${e.name}</strong> <small>(${e.timestamp})</small><br>
+          ${e.message}
+        </div>
+      `).join('');
+    }
+
+    // Alle 3 Sekunden automatisch aktualisieren
+    setInterval(loadEntries, 3000);
+    loadEntries();
+  </script>
+</body>
+</html>
