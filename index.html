@@ -52,7 +52,7 @@
   <div id="entries"></div>
 
   <script>
-    // === DEINE AKTUELLE API GATEWAY URL ===
+    // WICHTIG: Die korrekte API Gateway URL mit /guestbook am Ende
     const url = "https://82dy2iwzrc.execute-api.us-east-1.amazonaws.com/prod/guestbook";
 
     async function loadEntries() {
@@ -94,7 +94,7 @@
         const result = await response.json();
         alert(result.message || "Nachricht erfolgreich gesendet!");
 
-        loadEntries();                    // automatisch neu laden
+        loadEntries();
         document.getElementById('message').value = '';
       } catch (error) {
         alert("Fehler beim Senden. Bitte versuche es erneut.");
